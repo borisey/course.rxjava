@@ -41,4 +41,21 @@ public class ObservableTest {
 
         assertEquals(List.of(2), result);
     }
+
+    @Test
+    public void testFlatMapOperator() {
+        Observable<Integer> observable = Observable.create(emitter -> {
+            emitter.onNext(1);
+            emitter.onNext(2);
+            emitter.onComplete();
+        });
+
+        // Применяем оператор flatMap
+        List<Integer> result = new ArrayList<>();
+        observable.flatMap(item -> Observable.just(item, item + 1))  // Разворачиваем каждый элемент в два
+                .subscribe(result::add);
+
+        // Проверяем, что результат правильный
+        assertEquals(Arrays.asList(1, 2, 2, 3), result);
+    }
 }
