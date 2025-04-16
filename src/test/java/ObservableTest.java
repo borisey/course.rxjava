@@ -4,6 +4,8 @@ import org.rxjava.Observable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.*;
+import java.util.concurrent.*;
+import org.rxjava.SingleThreadScheduler;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -36,7 +38,7 @@ public class ObservableTest {
 
         // применяем оператор filter
         List<Integer> result = new ArrayList<>();
-        observable.filter(item -> item % 2 == 0)  // Оставляем только четные числа
+        observable.filter(item -> item % 2 == 0)
                 .subscribe(result::add);
 
         assertEquals(List.of(2), result);
@@ -52,10 +54,30 @@ public class ObservableTest {
 
         // Применяем оператор flatMap
         List<Integer> result = new ArrayList<>();
-        observable.flatMap(item -> Observable.just(item, item + 1))  // Разворачиваем каждый элемент в два
+        observable.flatMap(item -> Observable.just(item, item + 1))
                 .subscribe(result::add);
 
-        // Проверяем, что результат правильный
+        // Проверяю, что результат правильный
         assertEquals(Arrays.asList(1, 2, 2, 3), result);
+    }
+
+    @Test
+    public void testSchedulers() throws InterruptedException {
+        CountDownLatch latch = new CountDownLatch(1);  // Синхронизирую потоки
+
+        Observable<Object> observable = Observable.create(emitter -> {
+            emitter.onNext(1);
+            emitter.onComplete();
+        }).subscribeOn(new SingleThreadScheduler());
+
+        List<Integer> result = new ArrayList<>();
+        observable.subscribe(item -> {
+            result.add((Integer) item);
+            latch.countDown();
+        });
+
+        latch.await();
+
+        assertEquals(List.of(1), result);
     }
 }
