@@ -1,5 +1,6 @@
 import org.junit.jupiter.api.Test;
 import org.rxjava.Observable;
+import org.rxjava.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,7 +53,6 @@ public class ObservableTest {
             emitter.onComplete();
         });
 
-        // Применяем оператор flatMap
         List<Integer> result = new ArrayList<>();
         observable.flatMap(item -> Observable.just(item, item + 1))
                 .subscribe(result::add);
@@ -80,4 +80,33 @@ public class ObservableTest {
 
         assertEquals(List.of(1), result);
     }
+
+//    @Test
+//    public void testErrorHandling() {
+//        List<String> received = new ArrayList<>();
+//        List<Throwable> errors = new ArrayList<>();
+//
+//        Observable.create(emitter -> {
+//            emitter.onNext("Hello");
+//            emitter.onError(new RuntimeException("Test error"));
+//        }).subscribe(new Observer<String>() {
+//            @Override
+//            public void onNext(String item) {
+//                received.add(item);
+//            }
+//
+//            @Override
+//            public void onError(Throwable t) {
+//                errors.add(t);
+//            }
+//
+//            @Override
+//            public void onComplete() {
+//            }
+//        });
+//
+//        assertEquals(1, received.size());
+//        assertEquals("Hello", received.getFirst());
+//        assertEquals("Test error", errors.getFirst().getMessage());
+//    }
 }
