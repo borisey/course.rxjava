@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.*;
 import java.util.concurrent.*;
+
+import org.rxjava.Observer;
 import org.rxjava.SingleThreadScheduler;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -81,32 +83,37 @@ public class ObservableTest {
         assertEquals(List.of(1), result);
     }
 
-//    @Test
-//    public void testErrorHandling() {
-//        List<String> received = new ArrayList<>();
-//        List<Throwable> errors = new ArrayList<>();
-//
-//        Observable.create(emitter -> {
-//            emitter.onNext("Hello");
-//            emitter.onError(new RuntimeException("Test error"));
-//        }).subscribe(new Observer<String>() {
-//            @Override
-//            public void onNext(String item) {
-//                received.add(item);
-//            }
-//
-//            @Override
-//            public void onError(Throwable t) {
-//                errors.add(t);
-//            }
-//
-//            @Override
-//            public void onComplete() {
-//            }
-//        });
-//
-//        assertEquals(1, received.size());
-//        assertEquals("Hello", received.getFirst());
-//        assertEquals("Test error", errors.getFirst().getMessage());
-//    }
+    @Test
+    public void testErrorHandling() {
+        List<String> received = new ArrayList<>();
+        List<Throwable> errors = new ArrayList<>();
+
+        Observable<String> observable = Observable.create(emitter -> {
+            emitter.onNext("Hello");
+            emitter.onError(new RuntimeException("Test error"));
+        });
+
+        observable.subscribe(new Observer<String>() {
+            @Override
+            public void onNext(String item) {
+                received.add(item);
+            }
+
+            @Override
+            public void onError(Throwable t) {
+                errors.add(t);
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
+        });
+
+        assertEquals(1, received.size());
+        assertEquals("Hello", received.getFirst());
+
+        assertEquals(1, errors.size());
+        assertEquals("Test error", errors.getFirst().getMessage());
+    }
 }
