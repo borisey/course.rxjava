@@ -77,15 +77,15 @@
 
             @Override
             public void onComplete() {
-                // Завершение потока
+
             }
         });
 
-        // Проверка результатов
         assertEquals(1, received.size());
-        assertEquals("Hello", received.get(0));
+        assertEquals("Hello", received.getFirst());
+
         assertEquals(1, errors.size());
-        assertEquals("Test error", errors.get(0).getMessage());
+        assertEquals("Test error", errors.getFirst().getMessage());
     }
 </pre>
 
